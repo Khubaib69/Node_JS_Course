@@ -1,10 +1,21 @@
 const http = require('http');
-const routes = require('./routes');
 
-// This is the raw logic on which node.js works on but this is so complex. so instead of this we use express 
+const express = require('express');
+const app = express();
 
-// this will create a server so we can listen to a server
-const server = http.createServer(routes);
+// middleware 1 will consoellog but will not go the next muddkeware bcz it is stuck there
+// next() will transfer the sequence of control to the next middleware
+app.use((req,res,next)=>{
+    console.log("I am middle ware 1 ...");
+    next();
+})
+
+app.use((req,res,next)=>{
+    console.log("I am middle ware 2 ...");
+    res.send('<h1>HELLO FROM EXPRESS</h1>')
+})
+
+const server = http.createServer(app);
 
 // server to listen at port 3000
 server.listen(3000)

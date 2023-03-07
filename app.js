@@ -1,4 +1,5 @@
 const http = require('http');
+const bodyParser = require('body-parser');
 
 const express = require('express');
 const app = express();
@@ -6,15 +7,24 @@ const app = express();
 // middleware 1 will consoellog but will not go the next muddkeware bcz it is stuck there
 // next() will transfer the sequence of control to the next middleware
 
+app.use(bodyParser.urlencoded({extended:false}));
+
+
 app.use('/', (req, res, next) => {
     console.log("This always run");
     next();
 })
 
+// POST METHOD and will redirect it to /product
 app.use('/add-product', (req, res, next) => {
     console.log("I am middle ware 1 ...");
-    res.send('<h1>HELLO FROM Product Page</h1>')
-})
+    res.send('<form action="/product" method="POST" ><input name="message" type="text"><button type="submit">Send</button></input></form>')
+});
+
+app.use('/product', (req, res, next) => {
+    console.log(req.body);
+    res.redirect('/');
+});
 
 // any route other than /add-product will lead to the following path
 app.use('/', (req, res, next) => {

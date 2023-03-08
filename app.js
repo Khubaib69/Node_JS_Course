@@ -1,38 +1,21 @@
 const http = require('http');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const express = require('express');
 const app = express();
 
-// middleware 1 will consoellog but will not go the next muddkeware bcz it is stuck there
-// next() will transfer the sequence of control to the next middleware
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
-
-app.use('/', (req, res, next) => {
-    console.log("This always run");
-    next();
-})
-
-// POST METHOD and will redirect it to /product
-app.use('/add-product', (req, res, next) => {
-    console.log("I am middle ware 1 ...");
-    res.send('<form action="/product" method="POST" ><input name="message" type="text"><button type="submit">Send</button></input></form>')
+app.use((req, res, next) => {
+    // res.status(404).send('<h1>404 not found son</h1>')
+    res.status(404).sendFile(path.join(__dirname,'views','page-not-found.html'));
 });
-
-app.use('/product', (req, res, next) => {
-    console.log(req.body);
-    res.redirect('/');
-});
-
-// any route other than /add-product will lead to the following path
-app.use('/', (req, res, next) => {
-    console.log("I am middle ware 2 ...");
-    res.send('<h1>HELLO FROM EXPRESS</h1>')
-})
 
 const server = http.createServer(app);
-
-// server to listen at port 3000
 server.listen(3000)
